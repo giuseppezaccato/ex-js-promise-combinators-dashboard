@@ -38,24 +38,34 @@ Modifica getDashboardData() per usare Promise.allSettled(), in modo che:
 */
 
 
-//!fetch support POTREBBE ANDARE IN CONFLITTO CON IL PROMISE.ALL
-// async function fetchData(url) {
-//     const res = await fetch(url);
-//     const data = await res.json()
-//     return data
-// }
+//fetch support 
+async function fetchData(url) {
+    const res = await fetch(url);
+    const data = await res.json()
+    return data
+}
 
 const BASE_URL = 'http://localhost:5001/';
 
 async function getDashboardData(query) {
     try {
         let obj = {}
+
+        //* metodo verboso tradizionale
         const [resDestination, resAirport, resWeather] =
             await Promise.all([
-                fetch(`${BASE_URL}destinations?search=${query}`).then(res => res.json()),
-                fetch(`${BASE_URL}airports?search=${query}`).then(res => res.json()),
-                fetch(`${BASE_URL}weathers?search=${query}`).then(res => res.json()),
+                fetchData(`${BASE_URL}destinations?search=${query}`),
+                fetchData(`${BASE_URL}airports?search=${query}`),
+                fetchData(`${BASE_URL}weathers?search=${query}`),
             ])
+
+        // //!FUNZIONE POTENZIATA E SEMPLIFICATA CON UN MAP SU PROMISE.ALL! 
+        // //*per ottenere un nuovo array con gli endpoint già pronti
+        // //array di stringhe da usare nel map
+        // const stringhe = ['destinations', 'airports', 'weathers']
+        // const promesse = stringhe.map(stringa => fetchData(`${BASE_URL}${stringa}?search=${query}`))
+        // const [resDestination, resAirport, resWeather] = await Promise.all(promesse)
+
         return obj = {
             city: resDestination[0].name,
             country: resDestination[0].country,
